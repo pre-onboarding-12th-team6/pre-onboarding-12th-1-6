@@ -2,6 +2,7 @@
 
 .env 
 .git
+.eslintcache
 
 # dependencies
 /node_modules
