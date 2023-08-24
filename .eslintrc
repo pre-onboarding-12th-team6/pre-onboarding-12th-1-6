@@ -13,6 +13,7 @@
     "prettier/prettier"
   ],
   "rules":{
+    "no-alert": "off",
     "react/jsx-filename-extension":["warn",{"extensions":[".tsx"]}],
     "import/extensions":[
       "error",
