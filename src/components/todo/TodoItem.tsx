@@ -11,10 +11,10 @@ interface TodoItemProps {
 function TodoItem({ todo, handleIsCompleted, handleIsEditing, handleDeleteTodo }: TodoItemProps) {
 	return (
 		<>
-			<div>
+			<label htmlFor="todo item">
 				<input type="checkbox" onChange={() => handleIsCompleted()} checked={todo.isCompleted} />
 				<span>{todo.todo}</span>
-			</div>
+			</label>
 			<button type="button" data-testid="modify-button" onClick={() => handleIsEditing()}>
 				수정
 			</button>
