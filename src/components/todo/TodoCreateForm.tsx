@@ -13,13 +13,18 @@ function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 		setInputText(text);
 	}, []);
 
+	// Create: 유효한 input 값 검증 후 서버 요청
 	const handleCreateTodo = useCallback(async (): Promise<void> => {
 		try {
-			const newTodo: Partial<TodoType> = {
-				todo: inputText,
-			};
-			const response = await createTodo(newTodo as TodoType);
-			handleAddTodo(response?.data);
+			if (inputText.trim().length !== 0) {
+				const newTodo: Partial<TodoType> = {
+					todo: inputText,
+				};
+				const response = await createTodo(newTodo as TodoType);
+				handleAddTodo(response?.data);
+			} else {
+				alert('Todo 에 추가할 수 없습니다');
+			}
 		} catch (error) {
 			alert(error);
 		} finally {
