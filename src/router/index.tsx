@@ -1,32 +1,23 @@
 import React from 'react';
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, Outlet } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import Sign from '../pages/Sign';
-import { AuthContextProvider } from '../context/AuthContext';
 import Todo from '../pages/Todo';
 import Error from '../pages/Error';
 import { Authorized, UnAuthorized } from '../pages/Redirect';
-import Header from '../components/layout/Header';
-
-function Layout() {
-	return (
-		<AuthContextProvider>
-			<Header />
-			<Outlet />
-		</AuthContextProvider>
-	);
-}
+import Layout from '../components/layout';
+import ROUTER_PATHS from './routerPaths';
 
 const router = (
 	<Route element={<Layout />}>
 		<Route element={<UnAuthorized />}>
-			<Route path="/signin" element={<Sign />} />
-			<Route path="/signup" element={<Sign />} />
+			<Route path={ROUTER_PATHS.signin.path} element={<Sign />} />
+			<Route path={ROUTER_PATHS.signup.path} element={<Sign />} />
 		</Route>
 		<Route element={<Authorized />}>
-			<Route path="/" element={<Navigate to="/todo" replace />} />
-			<Route path="/todo" element={<Todo />} />
+			<Route path={ROUTER_PATHS.home.path} element={<Navigate to={ROUTER_PATHS.todo.path} replace />} />
+			<Route path={ROUTER_PATHS.todo.path} element={<Todo />} />
 		</Route>
-		<Route path="*" element={<Error />} />
+		<Route path={ROUTER_PATHS.default.path} element={<Error />} />
 	</Route>
 );
 
