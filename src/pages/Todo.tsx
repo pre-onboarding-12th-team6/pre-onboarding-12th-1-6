@@ -16,9 +16,17 @@ function Todo() {
 		const getTodoList = async () => {
 			try {
 				const response = await getTodos();
-				setTodoList(response?.data);
-			} catch (error) {
-				alert(error);
+				if (response?.status === 200) {
+					setTodoList(response?.data);
+				} else {
+					throw new Error('리스트를 불러오지 못했습니다');
+				}
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
 			}
 		};
 
@@ -57,13 +65,20 @@ function Todo() {
 	const handleUpdateTodo = async (id: number, todo: TodoType) => {
 		try {
 			const response = await updateTodo(id, todo);
+
 			if (response.status === 200) {
 				const updatedTodo = todoList.map((item) => (item.id === response?.data.id ? { ...response?.data } : item));
 				setTodoList(updatedTodo);
 				setIsModifyId(undefined);
+			} else {
+				throw new Error('Todo update에 실패했습니다');
 			}
-		} catch (error) {
-			alert(error);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
 		}
 	};
 
@@ -72,11 +87,20 @@ function Todo() {
 	// 기존 state를 변경해서 set
 	const handleDeleteTodo = async (id: number) => {
 		try {
-			await deleteTodo(id);
-			const deletedTodo = todoList.filter((item) => item.id !== id);
-			setTodoList(deletedTodo);
-		} catch (error) {
-			alert(error);
+			const response = await deleteTodo(id);
+
+			if (response.status === 204) {
+				const deletedTodo = todoList.filter((item) => item.id !== id);
+				setTodoList(deletedTodo);
+			} else {
+				throw new Error('Todo 삭제에 실패 했습니다');
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert(`unknown error occured`);
+			}
 		}
 	};
 

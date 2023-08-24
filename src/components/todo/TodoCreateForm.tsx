@@ -21,12 +21,20 @@ function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 					todo: inputText,
 				};
 				const response = await createTodo(newTodo as TodoType);
-				handleAddTodo(response?.data);
+				if (response.status === 201) {
+					handleAddTodo(response?.data);
+				} else {
+					throw new Error(`Todo 생성에 실패 했습니다`);
+				}
 			} else {
-				alert('Todo 에 추가할 수 없습니다');
+				throw new Error('Todo에 추가할 수 없습니다');
 			}
-		} catch (error) {
-			alert(error);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
 		} finally {
 			setInputText('');
 		}
