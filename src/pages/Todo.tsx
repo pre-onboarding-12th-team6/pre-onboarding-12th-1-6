@@ -1,4 +1,4 @@
-import { getTodos, updateTodo } from 'api/todoApi';
+import { deleteTodo, getTodos, updateTodo } from 'api/todoApi';
 import TodoCreateForm from 'components/todo/TodoCreateForm';
 import TodoItem from 'components/todo/TodoItem';
 import TodoUpdateForm from 'components/todo/TodoUpdateForm';
@@ -66,9 +66,15 @@ function Todo() {
 		}
 	};
 
-	const handleDeleteTodo = useCallback(() => {
-		console.log('handle deleteTodo');
-	}, []);
+	const handleDeleteTodo = async (id: number) => {
+		try {
+			await deleteTodo(id);
+			const deletedTodo = todoList.filter((item) => item.id !== id);
+			setTodoList(deletedTodo);
+		} catch (error) {
+			alert(error);
+		}
+	};
 
 	return (
 		<div>

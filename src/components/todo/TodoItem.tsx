@@ -5,7 +5,7 @@ interface TodoItemProps {
 	todo: TodoType;
 	handleUpdateTodo: (id: number, todo: TodoType) => void;
 	handleIsEditing: (id: number) => void;
-	handleDeleteTodo: () => void;
+	handleDeleteTodo: (id: number) => void;
 }
 
 function TodoItem({ todo, handleUpdateTodo, handleIsEditing, handleDeleteTodo }: TodoItemProps) {
@@ -30,7 +30,7 @@ function TodoItem({ todo, handleUpdateTodo, handleIsEditing, handleDeleteTodo }:
 			<button type="button" data-testid="modify-button" onClick={() => handleIsEditing(todo.id)}>
 				수정
 			</button>
-			<button type="button" data-testid="delete-button" onClick={() => handleDeleteTodo()}>
+			<button type="button" data-testid="delete-button" onClick={() => handleDeleteTodo(todo.id)}>
 				삭제
 			</button>
 		</>
