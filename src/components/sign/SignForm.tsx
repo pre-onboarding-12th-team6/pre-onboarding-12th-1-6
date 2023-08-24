@@ -1,9 +1,8 @@
 import { signIn, signUp } from 'api/authApi';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function SignForm() {
-	const { pathname } = useLocation();
+function SignForm({ page }: { page: string }) {
 	const navigate = useNavigate();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -37,7 +36,7 @@ function SignForm() {
 			password,
 		};
 
-		if (pathname === '/signup') {
+		if (page === 'signup') {
 			const { status } = await signUp(body);
 			if (status === 201) {
 				navigate('/signin');
@@ -51,7 +50,7 @@ function SignForm() {
 	};
 
 	const handleNavigation = () => {
-		if (pathname === '/signin') {
+		if (page === 'signin') {
 			navigate('/signup');
 		} else {
 			navigate('/signin');
@@ -80,7 +79,7 @@ function SignForm() {
 					required
 				/>
 			</div>
-			{pathname === '/signup' ? (
+			{page === 'signup' ? (
 				<>
 					<button type="submit" disabled={isDisabled} data-testid="signup-button">
 						회원가입
