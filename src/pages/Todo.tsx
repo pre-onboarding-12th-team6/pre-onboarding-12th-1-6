@@ -23,7 +23,7 @@ function Todo() {
 		};
 
 		const isTokenValid = localStorage.getItem('ACCESS_TOKEN');
-		if (!isTokenValid) {
+		if (isTokenValid) {
 			getTodoList();
 		}
 	}, []);
