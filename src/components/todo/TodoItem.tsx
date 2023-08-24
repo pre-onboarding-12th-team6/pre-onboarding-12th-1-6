@@ -1,8 +1,8 @@
-import { TodoProps } from 'pages/Todo';
 import React from 'react';
+import { Todo } from 'types/type';
 
 interface TodoItemProps {
-	todo: TodoProps;
+	todo: Todo;
 	handleIsCompleted: () => void;
 	handleIsEditing: () => void;
 	handleDeleteTodo: () => void;

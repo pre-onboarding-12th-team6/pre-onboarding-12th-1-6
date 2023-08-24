@@ -1,8 +1,9 @@
-import { TodoProps } from 'pages/Todo';
+import { createTodo } from 'api/todoApi';
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import { Todo as TodoType } from 'types/type';
 
 interface TodoCreateFormProps {
-	handleAddTodo: (newTodo: TodoProps) => void;
+	handleAddTodo: (newTodo: TodoType) => void;
 }
 function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 	const [inputText, setInputText] = useState('');
@@ -14,15 +15,11 @@ function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 
 	const handleCreateTodo = useCallback(async (): Promise<void> => {
 		try {
-			// 임시 테스트 response
-			const response: TodoProps = {
-				// id값을 임시로 선언
-				id: Date.now(),
+			const newTodo: Partial<TodoType> = {
 				todo: inputText,
-				isCompleted: false,
-				userId: 1,
 			};
-			handleAddTodo(response);
+			const response = await createTodo(newTodo as TodoType);
+			handleAddTodo(response?.data);
 		} catch (error) {
 			alert(error);
 		} finally {
