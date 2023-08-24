@@ -1,10 +1,12 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { signIn, signUp } from 'api/authApi';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function SignForm() {
 	const { pathname } = useLocation();
-	const [, setEmail] = useState('');
-	const [, setPassword] = useState('');
+	const navigate = useNavigate();
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [isComplete, setIsComplete] = useState({ id: false, password: false });
 	const [isDisabled, setIsDisabled] = useState(true);
 
@@ -12,24 +14,52 @@ function SignForm() {
 		setIsDisabled(!(isComplete.id && isComplete.password));
 	}, [isComplete]);
 
-	function emailCheck(e: ChangeEvent<HTMLInputElement>) {
+	const emailCheck = (e: ChangeEvent<HTMLInputElement>) => {
 		setIsComplete(
 			e.target.value.includes('@')
 				? { id: true, password: isComplete.password }
 				: { id: false, password: isComplete.password },
 		);
 		setEmail(e.target.value);
-	}
+	};
 
-	function passwordCheck(e: ChangeEvent<HTMLInputElement>) {
+	const passwordCheck = (e: ChangeEvent<HTMLInputElement>) => {
 		setIsComplete(
 			e.target.value.length >= 8 ? { id: isComplete.id, password: true } : { id: isComplete.id, password: false },
 		);
 		setPassword(e.target.value);
-	}
+	};
+
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const body = {
+			email,
+			password,
+		};
+
+		if (pathname === '/signup') {
+			const { status } = await signUp(body);
+			if (status === 201) {
+				navigate('/signin');
+			}
+		} else {
+			const { status } = await signIn(body);
+			if (status === 200) {
+				navigate('/todo');
+			}
+		}
+	};
+
+	const handleNavigation = () => {
+		if (pathname === '/signin') {
+			navigate('/signup');
+		} else {
+			navigate('/signin');
+		}
+	};
 
 	return (
-		<form>
+		<form onSubmit={handleSubmit}>
 			<div>
 				<span>아이디</span>
 				<input
@@ -51,13 +81,23 @@ function SignForm() {
 				/>
 			</div>
 			{pathname === '/signup' ? (
-				<button type="submit" disabled={isDisabled} data-testid="signup-button">
-					회원가입
-				</button>
+				<>
+					<button type="submit" disabled={isDisabled} data-testid="signup-button">
+						회원가입
+					</button>
+					<button onClick={handleNavigation} type="button">
+						취소
+					</button>
+				</>
 			) : (
-				<button type="submit" disabled={isDisabled} data-testid="signin-button">
-					로그인
-				</button>
+				<>
+					<button type="submit" disabled={isDisabled} data-testid="signin-button">
+						로그인
+					</button>
+					<button onClick={handleNavigation} type="button">
+						회원가입
+					</button>
+				</>
 			)}
 		</form>
 	);
