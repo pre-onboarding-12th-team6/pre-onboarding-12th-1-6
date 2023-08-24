@@ -9,10 +9,6 @@ function Todo() {
 	const [todoList, setTodoList] = useState<TodoType[]>([]);
 	const [isModifyId, setIsModifyId] = useState<number>();
 
-	// 임시 인증 토큰
-	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imhqa2xAaGprbC5oamtsIiwic3ViIjo5OTQ2LCJpYXQiOjE2OTI4MTY4MDMsImV4cCI6MTY5MzQyMTYwM30.OXEo2TovoPgLg9cApxL4A-lfnnB1PYdR2laNYtpZXiU';
-
 	// 서버로 부터 데이터 요청후 state에 set
 	// CRUD: Read
 	// 서버 요청을 최소화 하기 위해서 렌더링시 한번만 시행
@@ -25,12 +21,9 @@ function Todo() {
 				alert(error);
 			}
 		};
-		// 임시 인증
+
 		const isTokenValid = localStorage.getItem('ACCESS_TOKEN');
 		if (!isTokenValid) {
-			localStorage.setItem('ACCESS_TOKEN', token);
-			getTodoList();
-		} else {
 			getTodoList();
 		}
 	}, []);
