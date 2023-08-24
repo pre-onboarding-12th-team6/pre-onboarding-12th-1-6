@@ -9,6 +9,7 @@ interface TodoItemProps {
 }
 
 function TodoItem({ todo, handleUpdateTodo, handleIsEditing, handleDeleteTodo }: TodoItemProps) {
+	// CRUD: Update
 	const handleIsCompleted = useCallback(async () => {
 		try {
 			const newTodo: Partial<TodoType> = {
