@@ -29,11 +29,11 @@ const Button = styled.button`
 		return css`
 			color: ${colors.white};
 			background-color: ${colors.paleGreen};
-			padding: 8px 15px;
+			padding: 12px 24px;
 			border-radius: 50px;
 			transition: all 0.3s;
 			&:hover {
-				background-color: ${colors.charcoal};
+				background-color: ${colors.darkGreen};
 				color: ${colors.white};
 			}
 		`;
