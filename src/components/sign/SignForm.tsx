@@ -15,6 +15,11 @@ function SignForm({ page }: { page: string }) {
 		setIsDisabled(!(isComplete.id && isComplete.password));
 	}, [isComplete]);
 
+	useEffect(() => {
+		setEmail('');
+		setPassword('');
+	}, [page]);
+
 	const emailCheck = (e: ChangeEvent<HTMLInputElement>) => {
 		setIsComplete(
 			e.target.value.includes('@')
@@ -42,6 +47,7 @@ function SignForm({ page }: { page: string }) {
 			try {
 				const { status } = await signUp(body);
 				if (status === 201) {
+					alert('회원가입이 완료되었습니다');
 					navigate('/signin');
 				} else {
 					throw new Error('회원가입 중 오류가 발생했습니다');
@@ -86,6 +92,7 @@ function SignForm({ page }: { page: string }) {
 				<span>아이디</span>
 				<input
 					onChange={emailCheck}
+					value={email}
 					type="email"
 					data-testid="email-input"
 					placeholder="이메일을 입력해주세요"
@@ -96,6 +103,7 @@ function SignForm({ page }: { page: string }) {
 				<span>비밀번호</span>
 				<input
 					onChange={passwordCheck}
+					value={password}
 					type="password"
 					data-testid="password-input"
 					placeholder="8자 이상의 비밀번호를 입력해주세요"
