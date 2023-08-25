@@ -3,7 +3,7 @@
 프리온보딩 1주차에 진행한 과제물입니다. <br/>
 기간 : 2023.08.22. ~ 2023.08.25. <br />
 
-<a href='https://github.com/' target='_blank'>👉 배포 링크 👈 </a>
+<a href='https://pre-onboarding-12th-1-6.vercel.app/' target='_blank'>👉 배포 링크 👈 </a>
 
 ## 👥 팀원
 
