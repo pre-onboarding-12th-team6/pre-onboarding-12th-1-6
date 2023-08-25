@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { Todo as TodoType } from 'types/type';
 
@@ -61,17 +61,21 @@ interface TodoItemProps {
 }
 
 function TodoItem({ todo, handleUpdateTodo, handleIsEditing, handleDeleteTodo }: TodoItemProps) {
-	const handleIsCompleted = useCallback(async () => {
+	const handleIsCompleted = async () => {
 		try {
+			const comp = !todo.isCompleted;
+			console.log('asdfasd', comp);
 			const newTodo: Partial<TodoType> = {
+				id: todo.id,
 				todo: todo.todo,
 				isCompleted: !todo.isCompleted,
+				userId: todo.userId,
 			};
-			await handleUpdateTodo(todo.id, newTodo as TodoType);
+			handleUpdateTodo(todo.id, newTodo as TodoType);
 		} catch (error) {
 			alert(error);
 		}
-	}, []);
+	};
 
 	return (
 		<>
