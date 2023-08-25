@@ -13,7 +13,6 @@ function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 		setInputText(text);
 	}, []);
 
-	// Create: 유효한 input 값 검증 후 서버 요청
 	const handleCreateTodo = useCallback(async (): Promise<void> => {
 		try {
 			if (inputText.trim().length !== 0) {

@@ -11,27 +11,23 @@ function TodoUpdateForm({ todo, handleIsEditing, handleUpdateTodo }: TodoUpdateF
 	const [modifyIsCompleted, setModifyIsCompleted] = useState(todo.isCompleted);
 	const [modifiedTodo, setModifiedTodo] = useState(todo.todo);
 
-	// todo 내용 변경
 	const handleModifyTodo = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		const editedTodo = e.target.value;
 		setModifiedTodo(editedTodo);
 	}, []);
 
-	// todo 완료 여부 변경
 	const handleModifyIsCompleted = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		const editedIsCompleted = e.target.checked;
 		setModifyIsCompleted(editedIsCompleted);
 	}, []);
 
-	// CRUD: Update
-	// todo 수정 후 submit
 	const handleModifySubmit = useCallback(async () => {
 		try {
 			const newTodo: Partial<TodoType> = {
 				todo: modifiedTodo,
 				isCompleted: modifyIsCompleted,
 			};
-			handleUpdateTodo(todo.id, newTodo as TodoType);
+			await handleUpdateTodo(todo.id, newTodo as TodoType);
 		} catch (error) {
 			alert(error);
 		}
