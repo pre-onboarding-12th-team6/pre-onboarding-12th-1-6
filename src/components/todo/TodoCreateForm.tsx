@@ -1,7 +1,44 @@
 import { createTodo } from 'api/todoApi';
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import styled, { css } from 'styled-components';
 import { Todo as TodoType } from 'types/type';
 
+const InputWrap = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 400px;
+	margin-bottom: 10px;
+`;
+
+const Input = styled.input`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			padding: 10px 8px;
+			border: 1px solid ${colors.paleGreen};
+			border-radius: 4px;
+			width: 320px;
+		`;
+	}}
+`;
+
+const Button = styled.button`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			color: ${colors.white};
+			background-color: ${colors.paleGreen};
+			padding: 8px 15px;
+			border-radius: 50px;
+			transition: all 0.3s;
+			&:hover {
+				background-color: ${colors.charcoal};
+				color: ${colors.white};
+			}
+		`;
+	}}
+`;
 interface TodoCreateFormProps {
 	handleAddTodo: (newTodo: TodoType) => void;
 }
@@ -40,12 +77,12 @@ function TodoCreateForm({ handleAddTodo }: TodoCreateFormProps) {
 	}, [inputText]);
 
 	return (
-		<div>
-			<input type="text" data-testid="new-todo-input" onChange={handleTodoInput} value={inputText} />
-			<button type="button" data-testid="new-todo-add-button" onClick={handleCreateTodo}>
+		<InputWrap>
+			<Input type="text" data-testid="new-todo-input" onChange={handleTodoInput} value={inputText} />
+			<Button type="button" data-testid="new-todo-add-button" onClick={handleCreateTodo}>
 				추가
-			</button>
-		</div>
+			</Button>
+		</InputWrap>
 	);
 }
 

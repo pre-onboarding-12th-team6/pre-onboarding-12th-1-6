@@ -10,7 +10,7 @@ const colors = {
 	mediumGray: '#999999',
 	lightGray: '#e5e5e5',
 	// yellow
-	yellow: '#ffedb9',
+	yellow: '#E0B22C',
 	// red
 	red: '#ffafb4',
 	// green
@@ -23,10 +23,10 @@ const fonts = {
 		base: 'Pretendard',
 	},
 	size: {
-		base: '16px',
-		sm: '14px',
+		base: '14px',
+		sm: '12px',
 		lg: '18px',
-		title: '24px',
+		title: '28px',
 	},
 	weight: {
 		light: 300,
