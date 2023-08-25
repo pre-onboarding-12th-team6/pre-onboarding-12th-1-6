@@ -1,9 +1,9 @@
-const ROUTER_PATHS = {
+const routerPaths = {
 	home: { path: '/', name: 'Home' },
 	todo: { path: '/todo', name: 'Todo' },
-	signin: { path: '/signin', name: 'Sign In' },
-	signup: { path: '/signup', name: 'Sign Up' },
+	signin: { path: '/signin', name: 'SignIn' },
+	signup: { path: '/signup', name: 'SignUp' },
 	default: { path: '*', name: 'Default' },
 };
 
-export default ROUTER_PATHS;
+export default routerPaths;
