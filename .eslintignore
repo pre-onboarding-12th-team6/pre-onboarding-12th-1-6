@@ -1,9 +1,1 @@
 /node_modules
-.eslintrc
-.prettierrc
-/.github
-/.vscode
-package.json
-package-lock.json
-index.html
-README.md
