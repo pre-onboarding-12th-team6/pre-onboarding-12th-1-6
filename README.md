@@ -132,7 +132,7 @@ npm start
   )}
   ```
 
-- 하나의 Form 컴포넌트로 로그인/회원가입 기능을 구현한 것이 Best Practice로 선정 되었습니다.
+- 하나의 Form 컴포넌트로 로그인/회원가입 기능을 구현한 것을 Best Practice로 선정 했습니다.
 
 ❓ 선정 이유
 
@@ -155,15 +155,36 @@ npm start
 ### 4. 라우팅
 
   ```js
-    // 
+  const routerPaths = {
+   home: { path: '/', name: 'Home' },
+    todo: { path: '/todo', name: 'Todo' },
+   signin: { path: '/signin', name: 'SignIn' },
+   signup: { path: '/signup', name: 'SignUp' },
+   default: { path: '*', name: 'Default' },
+  };
   ```
 
-- 설명
+  ```js
+  const router = (
+    <Route element={<Layout />}>
+      <Route element={<UnAuthorized />}>
+        <Route path={routerPaths.signin.path} element={<Sign />} />
+        <Route path={routerPaths.signup.path} element={<Sign />} />
+      </Route>
+      <Route element={<Authorized />}>
+        <Route path={routerPaths.home.path} element={<Navigate to={routerPaths.todo.path} replace />} />
+        <Route path={routerPaths.todo.path} element={<Todo />} />
+      </Route>
+      <Route path={routerPaths.default.path} element={<Error />} />
+    </Route>
+  );
+  ```
 
+- 설명  
+  로컬스토리지에 토큰이 없으면 Sign 페이지로 Redirect, 토큰이 있으면 Todo 페이지로 Redirect
 ❓ 선정 이유
-
-- a
-- b
+- 라우터 코드의 가독성이 좋았다
+- 객체로 경로명을 관리하여 리팩토링이 용이
 
 ## 팀 규칙
 
