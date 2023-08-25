@@ -1,5 +1,57 @@
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import styled, { css } from 'styled-components';
 import { Todo as TodoType } from 'types/type';
+
+const Checkbox = styled.input`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			border-color: ${colors.charcoal};
+			margin-right: 5px;
+			vertical-align: middle;
+		`;
+	}}
+`;
+const ButtonWrap = styled.div`
+	display: flex;
+	gap: 5px;
+`;
+
+const SubmitBtn = styled.button`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			color: ${colors.paleGreen};
+			background-color: ${colors.white};
+			border: 1px solid ${colors.paleGreen};
+			padding: 4px 8px;
+			border-radius: 50px;
+			transition: all 0.2s;
+			&:hover {
+				background-color: ${colors.paleGreen};
+				color: ${colors.white};
+			}
+		`;
+	}}
+`;
+
+const CancelBtn = styled.button`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			color: ${colors.mediumGray};
+			background-color: ${colors.white};
+			border: 1px solid ${colors.mediumGray};
+			padding: 4px 8px;
+			border-radius: 50px;
+			transition: all 0.2s;
+			&:hover {
+				background-color: ${colors.mediumGray};
+				color: ${colors.white};
+			}
+		`;
+	}}
+`;
 
 interface TodoUpdateFormProps {
 	todo: TodoType;
@@ -36,15 +88,22 @@ function TodoUpdateForm({ todo, handleIsEditing, handleUpdateTodo }: TodoUpdateF
 	return (
 		<>
 			<label htmlFor="todo-modify">
-				<input type="checkbox" checked={modifyIsCompleted} onChange={handleModifyIsCompleted} />
-				<input data-testid="modify-input" value={modifiedTodo} onChange={handleModifyTodo} />
+				<Checkbox type="checkbox" checked={modifyIsCompleted} onChange={handleModifyIsCompleted} />
+				<input
+					data-testid="modify-input"
+					value={modifiedTodo}
+					onChange={handleModifyTodo}
+					style={{ padding: '2px 4px', border: '1px solid #999999' }}
+				/>
 			</label>
-			<button type="button" data-testid="submit-button" onClick={handleModifySubmit}>
-				제출
-			</button>
-			<button type="button" data-testid="cancel-button" onClick={() => handleIsEditing(todo.id)}>
-				취소
-			</button>
+			<ButtonWrap>
+				<SubmitBtn type="button" data-testid="submit-button" onClick={handleModifySubmit}>
+					제출
+				</SubmitBtn>
+				<CancelBtn type="button" data-testid="cancel-button" onClick={() => handleIsEditing(todo.id)}>
+					취소
+				</CancelBtn>
+			</ButtonWrap>
 		</>
 	);
 }
