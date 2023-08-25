@@ -69,7 +69,8 @@ function Todo() {
 			const response = await updateTodo(id, todo);
 
 			if (response.status === 200) {
-				const updatedTodo = todoList.map((item) => (item.id === response?.data.id ? { ...response?.data } : item));
+				const updatedTodo = todoList.map((item) => (item.id === response?.data.id ? { ...response.data } : item));
+
 				setTodoList(updatedTodo);
 				setIsModifyId(undefined);
 			} else {
