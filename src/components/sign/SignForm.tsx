@@ -2,7 +2,65 @@ import { signIn, signUp } from 'api/authApi';
 import useAuthContext from 'context/AuthContext';
 import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 import routerPaths from '../../router/routerPaths';
+
+const InputWrap = styled.div`
+	position: relative;
+	width: 300px;
+`;
+
+const Input = styled.input`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			width: 100%;
+			padding: 15px 10px;
+			border: 1px solid ${colors.charcoal};
+			border-radius: 4px;
+			margin: 10px;
+		`;
+	}}
+`;
+
+const InputSpan = styled.span`
+	${({ theme }) => {
+		const { colors, fonts } = theme;
+		return css`
+			position: absolute;
+			top: 0;
+			left: 20px;
+			background-color: ${colors.white};
+			padding: 3px;
+			font-size: ${fonts.size.sm};
+			color: ${colors.charcoal};
+		`;
+	}}
+`;
+
+const ButtonWrap = styled.div`
+	display: flex;
+	gap: 8px;
+	flex-direction: row;
+	justify-content: right;
+`;
+const Button = styled.button`
+	${({ theme }) => {
+		const { colors } = theme;
+		return css`
+			color: ${colors.white};
+			background-color: ${colors.black};
+			padding: 8px 15px;
+			border-radius: 50px;
+			transition: all 0.5s;
+			&:disabled {
+				background-color: ${colors.white};
+				color: ${colors.black};
+				border: 1px solid ${colors.charcoal};
+			}
+		`;
+	}}
+`;
 
 function SignForm({ page }: { page: string }) {
 	const navigate = useNavigate();
@@ -15,6 +73,11 @@ function SignForm({ page }: { page: string }) {
 	useEffect(() => {
 		setIsDisabled(!(isComplete.id && isComplete.password));
 	}, [isComplete]);
+
+	useEffect(() => {
+		setEmail('');
+		setPassword('');
+	}, [page]);
 
 	const emailCheck = (e: ChangeEvent<HTMLInputElement>) => {
 		setIsComplete(
@@ -43,6 +106,7 @@ function SignForm({ page }: { page: string }) {
 			try {
 				const { status } = await signUp(body);
 				if (status === 201) {
+					alert('회원가입이 완료되었습니다');
 					navigate(routerPaths.signin.path);
 				} else {
 					throw new Error('회원가입 중 오류가 발생했습니다');
@@ -83,44 +147,46 @@ function SignForm({ page }: { page: string }) {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<div>
-				<span>아이디</span>
-				<input
+			<InputWrap>
+				<InputSpan>아이디</InputSpan>
+				<Input
 					onChange={emailCheck}
+					value={email}
 					type="email"
 					data-testid="email-input"
 					placeholder="이메일을 입력해주세요"
 					required
 				/>
-			</div>
-			<div>
-				<span>비밀번호</span>
-				<input
+			</InputWrap>
+			<InputWrap>
+				<InputSpan>비밀번호</InputSpan>
+				<Input
 					onChange={passwordCheck}
+					value={password}
 					type="password"
 					data-testid="password-input"
 					placeholder="8자 이상의 비밀번호를 입력해주세요"
 					required
 				/>
-			</div>
+			</InputWrap>
 			{page === 'signup' ? (
-				<>
-					<button type="submit" disabled={isDisabled} data-testid="signup-button">
+				<ButtonWrap>
+					<Button type="submit" disabled={isDisabled} data-testid="signup-button">
 						회원가입
-					</button>
-					<button onClick={handleNavigation} type="button">
+					</Button>
+					<Button onClick={handleNavigation} type="button">
 						취소
-					</button>
-				</>
+					</Button>
+				</ButtonWrap>
 			) : (
-				<>
-					<button type="submit" disabled={isDisabled} data-testid="signin-button">
+				<ButtonWrap>
+					<Button type="submit" disabled={isDisabled} data-testid="signin-button">
 						로그인
-					</button>
-					<button onClick={handleNavigation} type="button">
+					</Button>
+					<Button onClick={handleNavigation} type="button">
 						회원가입
-					</button>
-				</>
+					</Button>
+				</ButtonWrap>
 			)}
 		</form>
 	);

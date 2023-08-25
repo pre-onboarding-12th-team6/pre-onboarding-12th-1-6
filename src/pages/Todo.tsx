@@ -1,9 +1,23 @@
 import { deleteTodo, getTodos, updateTodo } from 'api/todoApi';
 import TodoCreateForm from 'components/todo/TodoCreateForm';
 import TodoItem from 'components/todo/TodoItem';
+import NoItem from 'components/todo/NoTodoItem';
 import TodoUpdateForm from 'components/todo/TodoUpdateForm';
 import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { Todo as TodoType } from 'types/type';
+
+const TodoWrap = styled.div`
+	display: flex;
+	flex-direction: column;
+`;
+
+const TodoList = styled.li`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 4px 0;
+`;
 
 function Todo() {
 	const [todoList, setTodoList] = useState<TodoType[]>([]);
@@ -90,25 +104,29 @@ function Todo() {
 	};
 
 	return (
-		<div>
+		<TodoWrap>
 			<TodoCreateForm handleAddTodo={handleAddTodo} />
 			<ul>
-				{todoList.map((item) => (
-					<li key={item.id}>
-						{isModifyId !== item.id ? (
-							<TodoItem
-								todo={item}
-								handleUpdateTodo={handleUpdateTodo}
-								handleIsEditing={handleIsEditing}
-								handleDeleteTodo={handleDeleteTodo}
-							/>
-						) : (
-							<TodoUpdateForm todo={item} handleIsEditing={handleIsEditing} handleUpdateTodo={handleUpdateTodo} />
-						)}
-					</li>
-				))}
+				{todoList.length !== 0 ? (
+					todoList.map((item) => (
+						<TodoList key={item.id}>
+							{isModifyId !== item.id ? (
+								<TodoItem
+									todo={item}
+									handleUpdateTodo={handleUpdateTodo}
+									handleIsEditing={handleIsEditing}
+									handleDeleteTodo={handleDeleteTodo}
+								/>
+							) : (
+								<TodoUpdateForm todo={item} handleIsEditing={handleIsEditing} handleUpdateTodo={handleUpdateTodo} />
+							)}
+						</TodoList>
+					))
+				) : (
+					<NoItem />
+				)}
 			</ul>
-		</div>
+		</TodoWrap>
 	);
 }
 

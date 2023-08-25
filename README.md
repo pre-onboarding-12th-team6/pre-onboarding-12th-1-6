@@ -1,10 +1,12 @@
 # TEAM6 - Todo 애플리케이션
+
 프리온보딩 1주차에 진행한 과제물입니다. <br/>
 기간 : 2023.08.22. ~ 2023.08.25. <br />
 
 <a href='https://github.com/' target='_blank'>👉 배포 링크 👈 </a>
 
 ## 👥 팀원
+
 <table border>
   <tbody>
     <tr>
@@ -50,23 +52,33 @@
 <br/>
 
 ## 실행 방법
+
 1. 로컬 환경에 프로젝트 복사본 생성
+
 ```
 git clone https://github.com/pre-onboarding-12th-team6/pre-onboarding-12th-1-6
 ```
+
 2. 프로젝트 폴더로 이동
+
 ```
 cd pre-onboarding-12th-1-6
 ```
+
 3. 프로젝트 종속성 설치
+
 ```
 npm install
 ```
+
 4. 프로젝트 실행
+
 ```
 npm start
 ```
+
 ## 기술 스택
+
 <img src='https://user-images.githubusercontent.com/123078739/234895132-18ab503a-fcc7-486d-b89a-cb0cc1f7796b.svg' />
 <img src='https://user-images.githubusercontent.com/123078739/234895162-42f905c6-765d-44d2-bcb1-b011286ef6b2.svg' />
 <img src='https://camo.githubusercontent.com/6cafef69921d1cdf4aac79e0b96cfb4d58c2cfa08d791d31178da11e3d75f78c/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6178696f732d3541323945343f7374796c653d666f722d7468652d6261646765266c6f676f3d6178696f73266c6f676f436f6c6f723d7768697465' />
@@ -76,42 +88,230 @@ npm start
 <img src='https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white' />
 
 ## 프로젝트 구조
-- 
+
+-
 
 ## Best Practice
+>
 > 코드의 가독성과 재사용성을 기준으로 중심 기능별 최선의 방법을 선정했습니다.
 
 ### 1. API 관리
+
   ```js
-    // 
+  const apiClient = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+    timeout: 5000,
+  });
+
+  apiClient.interceptors.request.use(async (config) => {
+    const accessToken = localStorage.getItem('ACCESS_TOKEN');
+
+    if (accessToken) {
+      const newConfig = { ...config };
+      newConfig.headers.Authorization = `Bearer ${accessToken}`;
+      newConfig.headers['Content-Type'] = 'application/json';
+      return newConfig;
+    }
+
+    return config;
+  });
   ```
-- 설명
+  ```js
+  // auth API
+  export const signUp = (body: UserAuth) => {
+    return apiClient.post('/auth/signup', body);
+  };
+  ...
+
+  // todo API
+  export const createTodo = (todo: Todo) => {
+    return apiClient.post('/todos', todo);
+  };
+  ...
+  ```
+- axios 인스턴스를 생성하고 인터셉터를 통해 요청 전에 공통된 설정을 적용
+- auth, todo 요청 API를 각각의 파일로 분리
+- API 서버 주소를 .env 파일을 사용하여 환경 변수로 관리
 
 ❓ 선정 이유 
-- a
-- b
+- 모든 요청에 일관된 API 설정을 적용하여 코드 중복을 효과적으로 줄일 수 있다고 생각되어 선정하였습니다.
+- auth, todo 요청 API를 각각의 파일로 분리해 컴포넌트 내에서 직접 다루지 않아도 되어서 코드의 가독성을 높일 수 있어 선정하였습니다.
 
 ### 2. 로그인, 회원가입 기능
-  ```js
-    // 
-  ```
-- 설명
 
-❓ 선정 이유 
-- a
-- b
+  ```js
+  {page === 'signup' ? (
+    <>
+      <button type="submit" disabled={isDisabled} data-testid="signup-button">
+        회원가입
+      </button>
+      <button onClick={handleNavigation} type="button">
+        취소
+      </button>
+    </>
+  ) : (
+    <>
+      <button type="submit" disabled={isDisabled} data-testid="signin-button">
+        로그인
+      </button>
+      <button onClick={handleNavigation} type="button">
+        회원가입
+      </button>
+    </>
+  )}
+  ```
+
+- 하나의 Form 컴포넌트로 로그인/회원가입 기능을 구현한 것을 Best Practice로 선정 했습니다.
+
+❓ 선정 이유
+
+- 하나의 Form으로 여러 경우에 대한 처리를 할 수 있다는 점이 컴포넌트의 재사용성 측면에서 효율적이라고 판단했습니다.
+- 하나의 Form으로 운용할 경우, 중복되는 코드가 적어 리소스 낭비가 줄일 수 있다고 판단했습니다.
 
 ### 3. Todo CRUD 기능
+#### `Read`
   ```js
-    // 
+    // pages/Todo.tsx
+    
+    const [todoList, setTodoList] = useState<TodoType[]>([]);
+
+	useEffect(() => {
+		const getTodoList = async () => {
+			try {
+				const response = await getTodos();
+				if (response?.status === 200) {
+					setTodoList(response?.data);
+				} else {
+					throw new Error('리스트를 불러오지 못했습니다');
+				}
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
+			}
+		};
+
+		getTodoList();
+	}, []);
+
   ```
-- 설명
+
+
+#### `Create`
+  ```js
+    // pages/Todo.tsx
+
+    	const handleAddTodo = useCallback(
+		(newTodo: TodoType) => {
+			setTodoList([...todoList, newTodo]);
+		},
+		[todoList],
+	);
+
+  // components/TodoCreateForm.tsx
+
+  	const handleCreateTodo = useCallback(async (): Promise<void> => {
+		try {
+			if (inputText.trim().length !== 0) {
+				const newTodo: Partial<TodoType> = {
+					todo: inputText,
+				};
+				const response = await createTodo(newTodo as TodoType);
+				if (response.status === 201) {
+					handleAddTodo(response?.data);
+				} else {
+					throw new Error(`Todo 생성에 실패 했습니다`);
+				}
+			} else {
+				throw new Error('Todo에 추가할 수 없습니다');
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
+		} finally {
+			setInputText('');
+		}
+	}, [inputText]);
+  ```
+#### `Update`
+  ```js
+    // pages/Todo.tsx
+
+    const handleUpdateTodo = async (id: number, todo: TodoType) => {
+		try {
+			const response = await updateTodo(id, todo);
+
+			if (response.status === 200) {
+				const updatedTodo = todoList.map((item) => (item.id === response?.data.id ? { ...response?.data } : item));
+				setTodoList(updatedTodo);
+				setIsModifyId(undefined);
+			} else {
+				throw new Error('Todo update에 실패했습니다');
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
+		}
+	};
+
+    // components/TodoUpdateForm.tsx
+
+    const handleModifySubmit = useCallback(async () => {
+		try {
+			const newTodo: Partial<TodoType> = {
+				todo: modifiedTodo,
+				isCompleted: modifyIsCompleted,
+			};
+			await handleUpdateTodo(todo.id, newTodo as TodoType);
+		} catch (error) {
+			alert(error);
+		}
+	}, [modifiedTodo, modifyIsCompleted, todo, handleUpdateTodo]);
+  ```
+#### `Delete`
+  ```js
+    // pages/Todo.tsx
+
+  const handleDeleteTodo = async (id: number) => {
+      try {
+        const response = await deleteTodo(id);
+
+        if (response.status === 204) {
+          const deletedTodo = todoList.filter((item) => item.id !== id);
+          setTodoList(deletedTodo);
+        } else {
+          throw new Error('Todo 삭제에 실패 했습니다');
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          alert(`Error : ${error.message}`);
+        } else {
+          alert(`unknown error occured`);
+        }
+      }
+    };
+  ```
+- Create: 서버로 요청받은 response를 페이지에서 관리되고 있는 state에 추가
+- Read: 최초 렌더링에 서버로 요청한 Todo를 state에 저장
+- Update: state로 관리되고 있는 TodoList를 최신화 하여 state에 저장
+- Delete: TodoList state를 필터링하여 최신화된 state로 관리
 
 ❓ 선정 이유 
-- a
-- b
+- 서버 과부화를 방지하기 위해 요청을 최소화
+- state로 관리되고 있는 데이터를 response를 활용하여 최신상태로 유지하여 server와 client 데이터를 동기화
+- 함수, 변수명의 구체화하여 가독성을 증가
+- 에러 핸들링을 통해 요청의 성공/실패 여부를 사용자에게 공지
 
 ### 4. 라우팅
+
   ```js
   const routerPaths = {
 	  home: { path: '/', name: 'Home' },
@@ -136,13 +336,16 @@ npm start
     </Route>
   );
   ```
+
 - 설명  
   로컬스토리지에 토큰이 없으면 Sign 페이지로 Redirect, 토큰이 있으면 Todo 페이지로 Redirect
 ❓ 선정 이유 
+
 - 라우터 코드의 가독성이 좋았다
 - 객체로 경로명을 관리하여 리팩토링이 용이
 
 ## 팀 규칙
+
 ### 커밋 컨벤션
 
 🗒️ Pull Request rule
@@ -175,8 +378,8 @@ npm start
 | rename | 파일 혹은 폴더명을 수정만 한 경우 |
 | remove | 파일을 삭제만 한 경우 |
 
-
 ### 코드관리 전략
+
 - git-flow
   - `main` : 배포를 위한 브랜치
   - `develop` : 개발 소스의 최신 버전을 정리한 브랜치
