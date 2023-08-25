@@ -98,15 +98,44 @@ npm start
 ### 1. API 관리
 
   ```js
-    // 
+  const apiClient = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+    timeout: 5000,
+  });
+
+  apiClient.interceptors.request.use(async (config) => {
+    const accessToken = localStorage.getItem('ACCESS_TOKEN');
+
+    if (accessToken) {
+      const newConfig = { ...config };
+      newConfig.headers.Authorization = `Bearer ${accessToken}`;
+      newConfig.headers['Content-Type'] = 'application/json';
+      return newConfig;
+    }
+
+    return config;
+  });
   ```
+  ```js
+  // auth API
+  export const signUp = (body: UserAuth) => {
+    return apiClient.post('/auth/signup', body);
+  };
+  ...
 
-- 설명
+  // todo API
+  export const createTodo = (todo: Todo) => {
+    return apiClient.post('/todos', todo);
+  };
+  ...
+  ```
+- axios 인스턴스를 생성하고 인터셉터를 통해 요청 전에 공통된 설정을 적용
+- auth, todo 요청 API를 각각의 파일로 분리
+- API 서버 주소를 .env 파일을 사용하여 환경 변수로 관리
 
-❓ 선정 이유
-
-- a
-- b
+❓ 선정 이유 
+- 모든 요청에 일관된 API 설정을 적용하여 코드 중복을 효과적으로 줄일 수 있다고 생각되어 선정하였습니다.
+- auth, todo 요청 API를 각각의 파일로 분리해 컴포넌트 내에서 직접 다루지 않아도 되어서 코드의 가독성을 높일 수 있어 선정하였습니다.
 
 ### 2. 로그인, 회원가입 기능
 
@@ -140,17 +169,146 @@ npm start
 - 하나의 Form으로 운용할 경우, 중복되는 코드가 적어 리소스 낭비가 줄일 수 있다고 판단했습니다.
 
 ### 3. Todo CRUD 기능
-
+#### `Read`
   ```js
-    // 
+    // pages/Todo.tsx
+    
+    const [todoList, setTodoList] = useState<TodoType[]>([]);
+
+	useEffect(() => {
+		const getTodoList = async () => {
+			try {
+				const response = await getTodos();
+				if (response?.status === 200) {
+					setTodoList(response?.data);
+				} else {
+					throw new Error('리스트를 불러오지 못했습니다');
+				}
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
+			}
+		};
+
+		getTodoList();
+	}, []);
+
   ```
 
-- 설명
 
-❓ 선정 이유
+#### `Create`
+  ```js
+    // pages/Todo.tsx
 
-- a
-- b
+    	const handleAddTodo = useCallback(
+		(newTodo: TodoType) => {
+			setTodoList([...todoList, newTodo]);
+		},
+		[todoList],
+	);
+
+  // components/TodoCreateForm.tsx
+
+  	const handleCreateTodo = useCallback(async (): Promise<void> => {
+		try {
+			if (inputText.trim().length !== 0) {
+				const newTodo: Partial<TodoType> = {
+					todo: inputText,
+				};
+				const response = await createTodo(newTodo as TodoType);
+				if (response.status === 201) {
+					handleAddTodo(response?.data);
+				} else {
+					throw new Error(`Todo 생성에 실패 했습니다`);
+				}
+			} else {
+				throw new Error('Todo에 추가할 수 없습니다');
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
+		} finally {
+			setInputText('');
+		}
+	}, [inputText]);
+  ```
+#### `Update`
+  ```js
+    // pages/Todo.tsx
+
+    const handleUpdateTodo = async (id: number, todo: TodoType) => {
+		try {
+			const response = await updateTodo(id, todo);
+
+			if (response.status === 200) {
+				const updatedTodo = todoList.map((item) => (item.id === response?.data.id ? { ...response?.data } : item));
+				setTodoList(updatedTodo);
+				setIsModifyId(undefined);
+			} else {
+				throw new Error('Todo update에 실패했습니다');
+			}
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				alert(`Error : ${error.message}`);
+			} else {
+				alert('unknown error occurred');
+			}
+		}
+	};
+
+    // components/TodoUpdateForm.tsx
+
+    const handleModifySubmit = useCallback(async () => {
+		try {
+			const newTodo: Partial<TodoType> = {
+				todo: modifiedTodo,
+				isCompleted: modifyIsCompleted,
+			};
+			await handleUpdateTodo(todo.id, newTodo as TodoType);
+		} catch (error) {
+			alert(error);
+		}
+	}, [modifiedTodo, modifyIsCompleted, todo, handleUpdateTodo]);
+  ```
+#### `Delete`
+  ```js
+    // pages/Todo.tsx
+
+  const handleDeleteTodo = async (id: number) => {
+      try {
+        const response = await deleteTodo(id);
+
+        if (response.status === 204) {
+          const deletedTodo = todoList.filter((item) => item.id !== id);
+          setTodoList(deletedTodo);
+        } else {
+          throw new Error('Todo 삭제에 실패 했습니다');
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          alert(`Error : ${error.message}`);
+        } else {
+          alert(`unknown error occured`);
+        }
+      }
+    };
+  ```
+- Create: 서버로 요청받은 response를 페이지에서 관리되고 있는 state에 추가
+- Read: 최초 렌더링에 서버로 요청한 Todo를 state에 저장
+- Update: state로 관리되고 있는 TodoList를 최신화 하여 state에 저장
+- Delete: TodoList state를 필터링하여 최신화된 state로 관리
+
+❓ 선정 이유 
+- 서버 과부화를 방지하기 위해 요청을 최소화
+- state로 관리되고 있는 데이터를 response를 활용하여 최신상태로 유지하여 server와 client 데이터를 동기화
+- 함수, 변수명의 구체화하여 가독성을 증가
+- 에러 핸들링을 통해 요청의 성공/실패 여부를 사용자에게 공지
 
 ### 4. 라우팅
 

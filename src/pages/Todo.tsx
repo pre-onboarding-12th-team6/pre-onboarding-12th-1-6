@@ -4,7 +4,20 @@ import TodoItem from 'components/todo/TodoItem';
 import NoItem from 'components/todo/NoTodoItem';
 import TodoUpdateForm from 'components/todo/TodoUpdateForm';
 import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { Todo as TodoType } from 'types/type';
+
+const TodoWrap = styled.div`
+	display: flex;
+	flex-direction: column;
+`;
+
+const TodoList = styled.li`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 4px 0;
+`;
 
 function Todo() {
 	const [todoList, setTodoList] = useState<TodoType[]>([]);
@@ -91,12 +104,12 @@ function Todo() {
 	};
 
 	return (
-		<div>
+		<TodoWrap>
 			<TodoCreateForm handleAddTodo={handleAddTodo} />
 			<ul>
 				{todoList.length !== 0 ? (
 					todoList.map((item) => (
-						<li key={item.id}>
+						<TodoList key={item.id}>
 							{isModifyId !== item.id ? (
 								<TodoItem
 									todo={item}
@@ -107,13 +120,13 @@ function Todo() {
 							) : (
 								<TodoUpdateForm todo={item} handleIsEditing={handleIsEditing} handleUpdateTodo={handleUpdateTodo} />
 							)}
-						</li>
+						</TodoList>
 					))
 				) : (
 					<NoItem />
 				)}
 			</ul>
-		</div>
+		</TodoWrap>
 	);
 }
 
