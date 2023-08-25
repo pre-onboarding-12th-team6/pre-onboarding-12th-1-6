@@ -2,6 +2,7 @@ import { signIn, signUp } from 'api/authApi';
 import useAuthContext from 'context/AuthContext';
 import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import routerPaths from '../../router/routerPaths';
 
 function SignForm({ page }: { page: string }) {
 	const navigate = useNavigate();
@@ -42,7 +43,7 @@ function SignForm({ page }: { page: string }) {
 			try {
 				const { status } = await signUp(body);
 				if (status === 201) {
-					navigate('/signin');
+					navigate(routerPaths.signin.path);
 				} else {
 					throw new Error('회원가입 중 오류가 발생했습니다');
 				}
@@ -58,7 +59,7 @@ function SignForm({ page }: { page: string }) {
 				const { status, data } = await signIn(body);
 				if (status === 200) {
 					saveToken(data.access_token);
-					navigate('/todo');
+					navigate(routerPaths.todo.path);
 				} else {
 					throw new Error('로그인 중 오류가 발생했습니다');
 				}
@@ -74,9 +75,9 @@ function SignForm({ page }: { page: string }) {
 
 	const handleNavigation = () => {
 		if (page === 'signin') {
-			navigate('/signup');
+			navigate(routerPaths.signup.path);
 		} else {
-			navigate('/signin');
+			navigate(routerPaths.signin.path);
 		}
 	};
 
