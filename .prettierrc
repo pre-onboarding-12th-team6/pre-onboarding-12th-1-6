@@ -3,5 +3,13 @@
   "parser": "typescript",
   "semi": true,
   "useTabs": true,
-  "printWidth": 120
+  "printWidth": 120,
+  "overrides": [
+    {
+      "files": ["*.mts", "*.cts", "*.ts"],
+      "options": {
+        "parser": "typescript"
+      }
+    }
+  ]
 }
