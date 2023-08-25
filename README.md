@@ -156,14 +156,13 @@ npm start
 
   ```js
   const routerPaths = {
-   home: { path: '/', name: 'Home' },
+	  home: { path: '/', name: 'Home' },
     todo: { path: '/todo', name: 'Todo' },
-   signin: { path: '/signin', name: 'SignIn' },
-   signup: { path: '/signup', name: 'SignUp' },
-   default: { path: '*', name: 'Default' },
+	  signin: { path: '/signin', name: 'SignIn' },
+	  signup: { path: '/signup', name: 'SignUp' },
+	  default: { path: '*', name: 'Default' },
   };
   ```
-
   ```js
   const router = (
     <Route element={<Layout />}>
@@ -182,7 +181,8 @@ npm start
 
 - 설명  
   로컬스토리지에 토큰이 없으면 Sign 페이지로 Redirect, 토큰이 있으면 Todo 페이지로 Redirect
-❓ 선정 이유
+❓ 선정 이유 
+
 - 라우터 코드의 가독성이 좋았다
 - 객체로 경로명을 관리하여 리팩토링이 용이
 
