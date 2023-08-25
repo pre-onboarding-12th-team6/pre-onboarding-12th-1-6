@@ -44,11 +44,11 @@ function SignForm({ page }: { page: string }) {
 				if (status === 201) {
 					navigate('/signin');
 				} else {
-					alert('회원가입 중 오류가 발생했습니다');
+					throw new Error('회원가입 중 오류가 발생했습니다');
 				}
-			} catch (err: unknown) {
-				if (err instanceof Error) {
-					alert(`회원가입 중 오류가 발생했습니다: ${err.message}`);
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
 				} else {
 					alert('unknown error occurred');
 				}
@@ -60,11 +60,11 @@ function SignForm({ page }: { page: string }) {
 					saveToken(data.access_token);
 					navigate('/todo');
 				} else {
-					alert('로그인 중 오류가 발생했습니다');
+					throw new Error('로그인 중 오류가 발생했습니다');
 				}
-			} catch (err) {
-				if (err instanceof Error) {
-					alert(`로그인 중 오류가 발생했습니다: ${err.message}`);
+			} catch (error) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
 				} else {
 					alert('unknown error occurred');
 				}
