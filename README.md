@@ -98,15 +98,44 @@ npm start
 ### 1. API 관리
 
   ```js
-    // 
+  const apiClient = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+    timeout: 5000,
+  });
+
+  apiClient.interceptors.request.use(async (config) => {
+    const accessToken = localStorage.getItem('ACCESS_TOKEN');
+
+    if (accessToken) {
+      const newConfig = { ...config };
+      newConfig.headers.Authorization = `Bearer ${accessToken}`;
+      newConfig.headers['Content-Type'] = 'application/json';
+      return newConfig;
+    }
+
+    return config;
+  });
   ```
+  ```js
+  // auth API
+  export const signUp = (body: UserAuth) => {
+    return apiClient.post('/auth/signup', body);
+  };
+  ...
 
-- 설명
+  // todo API
+  export const createTodo = (todo: Todo) => {
+    return apiClient.post('/todos', todo);
+  };
+  ...
+  ```
+- axios 인스턴스를 생성하고 인터셉터를 통해 요청 전에 공통된 설정을 적용
+- auth, todo 요청 API를 각각의 파일로 분리
+- API 서버 주소를 .env 파일을 사용하여 환경 변수로 관리
 
-❓ 선정 이유
-
-- a
-- b
+❓ 선정 이유 
+- 모든 요청에 일관된 API 설정을 적용하여 코드 중복을 효과적으로 줄일 수 있다고 생각되어 선정하였습니다.
+- auth, todo 요청 API를 각각의 파일로 분리해 컴포넌트 내에서 직접 다루지 않아도 되어서 코드의 가독성을 높일 수 있어 선정하였습니다.
 
 ### 2. 로그인, 회원가입 기능
 
