@@ -104,7 +104,8 @@ npm start
 ### 3. Todo CRUD 기능
 #### `Read`
   ```js
-    // Read
+    // pages/Todo.tsx
+    
     const [todoList, setTodoList] = useState<TodoType[]>([]);
 
 	useEffect(() => {
@@ -210,6 +211,7 @@ npm start
 #### `Delete`
   ```js
     // pages/Todo.tsx
+
   const handleDeleteTodo = async (id: number) => {
       try {
         const response = await deleteTodo(id);
