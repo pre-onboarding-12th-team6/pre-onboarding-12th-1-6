@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import routerPaths from '../router/routerPaths';
 
 export const useAuthContext = createContext<{
 	token: string | null;
@@ -16,14 +17,14 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
 	const saveToken = useCallback(
 		(jwt: string) => {
 			localStorage.setItem('ACCESS_TOKEN', jwt);
-			navigate('/todo');
+			navigate(routerPaths.todo.path);
 		},
 		[navigate],
 	);
 
 	const clearToken = useCallback(() => {
 		localStorage.removeItem('ACCESS_TOKEN');
-		navigate('/signin');
+		navigate(routerPaths.signin.path);
 	}, [navigate]);
 
 	const memoizedValue = useMemo(() => ({ token, saveToken, clearToken }), [token, saveToken, clearToken]);
