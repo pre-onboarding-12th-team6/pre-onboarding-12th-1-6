@@ -1,9 +1,11 @@
 import { signIn, signUp } from 'api/authApi';
-import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import useAuthContext from 'context/AuthContext';
+import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function SignForm({ page }: { page: string }) {
 	const navigate = useNavigate();
+	const { saveToken } = useContext(useAuthContext);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [isComplete, setIsComplete] = useState({ id: false, password: false });
@@ -37,14 +39,35 @@ function SignForm({ page }: { page: string }) {
 		};
 
 		if (page === 'signup') {
-			const { status } = await signUp(body);
-			if (status === 201) {
-				navigate('/signin');
+			try {
+				const { status } = await signUp(body);
+				if (status === 201) {
+					navigate('/signin');
+				} else {
+					throw new Error('회원가입 중 오류가 발생했습니다');
+				}
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
 			}
 		} else {
-			const { status } = await signIn(body);
-			if (status === 200) {
-				navigate('/todo');
+			try {
+				const { status, data } = await signIn(body);
+				if (status === 200) {
+					saveToken(data.access_token);
+					navigate('/todo');
+				} else {
+					throw new Error('로그인 중 오류가 발생했습니다');
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
 			}
 		}
 	};
