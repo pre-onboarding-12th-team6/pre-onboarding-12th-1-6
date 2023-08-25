@@ -1,6 +1,7 @@
 import { deleteTodo, getTodos, updateTodo } from 'api/todoApi';
 import TodoCreateForm from 'components/todo/TodoCreateForm';
 import TodoItem from 'components/todo/TodoItem';
+import NoItem from 'components/todo/NoTodoItem';
 import TodoUpdateForm from 'components/todo/TodoUpdateForm';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Todo as TodoType } from 'types/type';
@@ -93,20 +94,24 @@ function Todo() {
 		<div>
 			<TodoCreateForm handleAddTodo={handleAddTodo} />
 			<ul>
-				{todoList.map((item) => (
-					<li key={item.id}>
-						{isModifyId !== item.id ? (
-							<TodoItem
-								todo={item}
-								handleUpdateTodo={handleUpdateTodo}
-								handleIsEditing={handleIsEditing}
-								handleDeleteTodo={handleDeleteTodo}
-							/>
-						) : (
-							<TodoUpdateForm todo={item} handleIsEditing={handleIsEditing} handleUpdateTodo={handleUpdateTodo} />
-						)}
-					</li>
-				))}
+				{todoList.length !== 0 ? (
+					todoList.map((item) => (
+						<li key={item.id}>
+							{isModifyId !== item.id ? (
+								<TodoItem
+									todo={item}
+									handleUpdateTodo={handleUpdateTodo}
+									handleIsEditing={handleIsEditing}
+									handleDeleteTodo={handleDeleteTodo}
+								/>
+							) : (
+								<TodoUpdateForm todo={item} handleIsEditing={handleIsEditing} handleUpdateTodo={handleUpdateTodo} />
+							)}
+						</li>
+					))
+				) : (
+					<NoItem />
+				)}
 			</ul>
 		</div>
 	);
