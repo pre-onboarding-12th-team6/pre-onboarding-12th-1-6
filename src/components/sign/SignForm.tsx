@@ -4,7 +4,7 @@ import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from '
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import routerPaths from '../../router/routerPaths';
-        
+
 const InputWrap = styled.div`
 	position: relative;
 	width: 300px;
