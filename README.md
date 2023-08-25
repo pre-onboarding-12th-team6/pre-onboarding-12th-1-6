@@ -125,8 +125,7 @@ src/
 ```
 
 ## Best Practice
->
-> 코드의 가독성과 재사용성을 기준으로 중심 기능별 최선의 방법을 선정했습니다.
+> 논리적인 디렉토리 구조, 코드의 가독성과 재사용성을 기준으로 중심 기능별 최선의 방법을 선정했습니다.
 
 ### 1. API 관리
 
@@ -162,17 +161,19 @@ src/
   };
   ...
   ```
-- axios 인스턴스를 생성하고 인터셉터를 통해 요청 전에 공통된 설정을 적용
-- auth, todo 요청 API를 각각의 파일로 분리
-- API 서버 주소를 .env 파일을 사용하여 환경 변수로 관리
+- axios 인스턴스를 생성하고 intercepter를 통해 api 요청 전에 공통된 설정을 적용하였습니다.
+- auth, todo 요청 API를 각각의 파일로 분리했습니다.
+- API 서버 주소를 .env 파일을 사용하여 환경 변수로 관리했습니다.
 
 ❓ 선정 이유 
-- 모든 요청에 일관된 API 설정을 적용하여 코드 중복을 효과적으로 줄일 수 있다고 생각되어 선정하였습니다.
+- `axios intercepter` 사용으로 모든 요청에 일관된 API 설정을 적용하여 코드 중복을 효과적으로 줄일 수 있다고 생각되어 선정하였습니다.
 - auth, todo 요청 API를 각각의 파일로 분리해 컴포넌트 내에서 직접 다루지 않아도 되어서 코드의 가독성을 높일 수 있어 선정하였습니다.
+
 
 ### 2. 로그인, 회원가입 기능
 
   ```js
+  // 공통 컴포넌트 SignForm 내 분기처리
   {page === 'signup' ? (
     <>
       <button type="submit" disabled={isDisabled} data-testid="signup-button">
@@ -194,12 +195,59 @@ src/
   )}
   ```
 
-- 하나의 Form 컴포넌트로 로그인/회원가입 기능을 구현한 것을 Best Practice로 선정 했습니다.
+  ```js
+  // 에러 핸들링
+  	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const body = {
+			email,
+			password,
+		};
+
+		if (page === 'signup') {
+			try {
+				const { status } = await signUp(body);
+				if (status === 201) {
+					alert('회원가입이 완료되었습니다');
+					navigate(routerPaths.signin.path);
+				} else {
+					throw new Error('회원가입 중 오류가 발생했습니다');
+				}
+			} catch (error: unknown) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
+			}
+		} else {
+			try {
+				const { status, data } = await signIn(body);
+				if (status === 200) {
+					saveToken(data.access_token);
+					navigate(routerPaths.todo.path);
+				} else {
+					throw new Error('로그인 중 오류가 발생했습니다');
+				}
+			} catch (error) {
+				if (error instanceof Error) {
+					alert(`Error : ${error.message}`);
+				} else {
+					alert('unknown error occurred');
+				}
+			}
+		}
+	};
+  ```
+
+- 하나의 Form 컴포넌트에서 path name에 따라 분기처리를 하여 로그인/회원가입 기능을 구현하였습니다.
+- try, catch문을 이용한 하드한 예외처리를 통해 사용자에게 에러 리다이렉트가 표시될 리스크를 줄이고 alert문으로 요청의 성공, 실패 여부를 사용자가 알 수 있게 하였습니다.
 
 ❓ 선정 이유
 
 - 하나의 Form으로 여러 경우에 대한 처리를 할 수 있다는 점이 컴포넌트의 재사용성 측면에서 효율적이라고 판단했습니다.
 - 하나의 Form으로 운용할 경우, 중복되는 코드가 적어 리소스 낭비가 줄일 수 있다고 판단했습니다.
+
 
 ### 3. Todo CRUD 기능
 #### `Read`
@@ -332,23 +380,24 @@ src/
       }
     };
   ```
-- Create: 서버로 요청받은 response를 페이지에서 관리되고 있는 state에 추가
-- Read: 최초 렌더링에 서버로 요청한 Todo를 state에 저장
-- Update: state로 관리되고 있는 TodoList를 최신화 하여 state에 저장
-- Delete: TodoList state를 필터링하여 최신화된 state로 관리
+- 데이터의 동기화, api요청 최소화를 위해 api 응답값을 state로 관리하였습니다.
+- Create: 서버로 요청받은 response를 페이지에서 관리되고 있는 state에 추가합니다.
+- Read: 최초 렌더링에 서버로 요청한 Todo를 state에 저장합니다.
+- Update: state로 관리되고 있는 TodoList를 최신화 하여 state에 저장합니다.
+- Delete: TodoList state를 필터링하여 최신화된 state로 관리합니다.
+- 로그인, 회원가입 기능과 동일하게 try, catch문을 이용한 하드한 예외처리를 통해 사용자에게 에러 리다이렉트가 표시될 리스크를 줄이고 alert문으로 요청의 성공, 실패 여부를 사용자가 알 수 있게 하였습니다.
 
 ❓ 선정 이유 
-- 서버 과부화를 방지하기 위해 요청을 최소화
-- state로 관리되고 있는 데이터를 response를 활용하여 최신상태로 유지하여 server와 client 데이터를 동기화
-- 함수, 변수명의 구체화하여 가독성을 증가
-- 에러 핸들링을 통해 요청의 성공/실패 여부를 사용자에게 공지
+- 많은 요청으로 인한 서버 과부화를 방지하기 위해 api 요청을 최소화 했다는 점, state로 관리되고 있는 데이터를 response를 활용하여 최신상태로 유지하여 server와 client 데이터를 동기화 했다는 점에서 최선의 방법이라고 생각했습니다.
+- 함수, 변수명이 구체적으로 작성되어 있어 가독성이 좋았습니다.
+
 
 ### 4. 라우팅
 
   ```js
   const routerPaths = {
 	  home: { path: '/', name: 'Home' },
-    todo: { path: '/todo', name: 'Todo' },
+      todo: { path: '/todo', name: 'Todo' },
 	  signin: { path: '/signin', name: 'SignIn' },
 	  signup: { path: '/signup', name: 'SignUp' },
 	  default: { path: '*', name: 'Default' },
@@ -371,11 +420,12 @@ src/
   ```
 
 - 설명  
-  로컬스토리지에 토큰이 없으면 Sign 페이지로 Redirect, 토큰이 있으면 Todo 페이지로 Redirect
-❓ 선정 이유 
+  로컬스토리지에 토큰이 없으면 Sign 페이지로 Redirect, 토큰이 있으면 Todo 페이지로 Redirect 합니다.
 
-- 라우터 코드의 가독성이 좋았다
-- 객체로 경로명을 관리하여 리팩토링이 용이
+❓ 선정 이유 
+- 라우터 코드의 가독성이 좋았습니다.
+- private router인 `UnAuthorized`, `Authorized` 컴포넌트를 사용하여 각 페이지별로 useEffect 등의 훅을 사용하지 않아 불필요한 훅 캐싱을 최대한 방지할 수 있어 선정하였습니다.
+- `routerPaths` 객체로 경로명을 관리해 라우터 외 useNavigate 훅 등 pathName을 사용해야 하는 곳에서 공통으로 사용이 가능하게 설정하여 코드의 재사용성이 높고 유지보수와 리팩토링이 용이하다고 생각했습니다.
 
 ## 팀 규칙
 
