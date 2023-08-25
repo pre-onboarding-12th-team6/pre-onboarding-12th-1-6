@@ -88,8 +88,41 @@ npm start
 <img src='https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white' />
 
 ## 프로젝트 구조
-
--
+```
+src/
+├── api/
+│   ├── apiClient.ts
+│   ├── authApi.ts
+│   └── todoApi.ts
+├── components/
+│   ├── layout/
+│   │   ├── Header.tsx
+│   │   └── index.tsx
+│   ├── sign/
+│   │   └── SignForm.tsx
+│   └── todo/
+│       ├── NoTodoItem.tsx
+│       ├── TodoCreateForm.tsx
+│       ├── TodoItem.tsx
+│       └── TodoUpdateForm.tsx
+├── context/
+│   └── AuthContext.tsx
+├── pages/
+│   ├── Error.tsx
+│   ├── Redirect.tsx
+│   ├── Sign.tsx
+│   └── Todo.tsx
+├── router/
+│   ├── index.tsx
+│   └── routerPaths.ts
+├── style/
+│   └── GlobalStyles.tsx
+├── types/
+│   ├── theme.ts
+│   └── type.ts
+├── app.tsx
+└── index.tsx
+```
 
 ## Best Practice
 >
