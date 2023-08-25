@@ -1,6 +1,5 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
-import { Todo as TodoType } from 'types/type';
 
 const Checkbox = styled.input`
 	${({ theme }) => {
@@ -52,43 +51,21 @@ const DeleteBtn = styled.button`
 		`;
 	}}
 `;
-
-interface TodoItemProps {
-	todo: TodoType;
-	handleUpdateTodo: (id: number, todo: TodoType) => void;
-	handleIsEditing: (id: number) => void;
-	handleDeleteTodo: (id: number) => void;
-}
-
-function TodoItem({ todo, handleUpdateTodo, handleIsEditing, handleDeleteTodo }: TodoItemProps) {
-	const handleIsCompleted = useCallback(async () => {
-		try {
-			const newTodo: Partial<TodoType> = {
-				todo: todo.todo,
-				isCompleted: !todo.isCompleted,
-			};
-			await handleUpdateTodo(todo.id, newTodo as TodoType);
-		} catch (error) {
-			alert(error);
-		}
-	}, []);
-
+function NoItem() {
 	return (
-		<>
-			<label htmlFor="todo item">
-				<Checkbox type="checkbox" onChange={handleIsCompleted} checked={todo.isCompleted} />
-				<span>{todo.todo}</span>
-			</label>
+		<li>
+			<Checkbox id="todoNoItem" type="checkbox" />
+			<span>할 일을 추가해주세요</span>
 			<ButtonWrap>
-				<EditBtn type="button" data-testid="modify-button" onClick={() => handleIsEditing(todo.id)}>
+				<EditBtn type="button" data-testid="modify-button" disabled>
 					수정
 				</EditBtn>
-				<DeleteBtn type="button" data-testid="delete-button" onClick={() => handleDeleteTodo(todo.id)}>
+				<DeleteBtn type="button" data-testid="delete-button" disabled>
 					삭제
 				</DeleteBtn>
 			</ButtonWrap>
-		</>
+		</li>
 	);
 }
 
-export default TodoItem;
+export default NoItem;
