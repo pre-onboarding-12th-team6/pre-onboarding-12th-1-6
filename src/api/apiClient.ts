@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-	baseURL: 'https://www.pre-onboarding-selection-task.shop/',
+	baseURL: process.env.REACT_APP_BASE_URL,
 	timeout: 5000,
 });
 
